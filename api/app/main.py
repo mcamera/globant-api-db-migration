@@ -1,30 +1,45 @@
-from fastapi import FastAPI, UploadFile
+from typing import Optional
 
+from fastapi import FastAPI, File, HTTPException, UploadFile, status
 
+from utils import get_logger
+
+logger = get_logger(__name__)
 app = FastAPI()
 
+
 @app.post("/departments")
-async def departments(csv_file: UploadFile) -> dict:
-    try:
-        if not csv_file:
-            return {"message": "No file sent!"}
+async def departments(csv_file: Optional[UploadFile] = File(None)) -> dict:
 
-        if not csv_file.filename.endswith('.csv'):
-            return {"error": "File must be a CSV!"}
-        
-        contents = csv_file.file.read()
-        contents = contents.decode("utf-8").splitlines()
-        
-        if len(contents) > 1000:
-            return {"error": "File name is too long, must be less than 1000 records!"}
-        elif len(contents) == 0:
-            return {"error": "File is empty! Send at least 1 record."}
-        else:
-            return {"message": contents} 
+    if not csv_file:
+        logger.error("No file sent!")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No file sent!"
+        )
 
-    except Exception as e:
-        return {"error": str(e)}
-    
+    if not csv_file.filename.endswith(".csv"):
+        logger.error("File must be a CSV!")
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="File must be a CSV!",
+        )
+
+    contents = csv_file.file.read()
+    contents = contents.decode("utf-8").splitlines()
+
+    if len(contents) > 1000:
+        logger.error("Too many records! Must be less than 1000 lines.")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Too many records! Must be less than 1000 lines.",
+        )
+    elif len(contents) == 0:
+        logger.error("File is empty! Send at least 1 record.")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="File is empty! Send at least 1 record.",
+        )
+
 
 @app.post("/jobs")
 async def jobs() -> dict:
