@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import mysql.connector
 from fastapi import HTTPException, status
@@ -43,7 +44,7 @@ def get_mysql_connection():
             )
 
 
-def handle_db_errors(err: ProgrammingError):
+def handle_db_errors(err: Union[ProgrammingError, mysql.connector.Error]) -> None:
     """Handle database errors and raise appropriate HTTP exceptions.
 
     Args:
@@ -57,6 +58,12 @@ def handle_db_errors(err: ProgrammingError):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Table does not exist!",
+        )
+    elif err.errno == errorcode.ER_DUP_ENTRY:
+        logger.error("Duplicate entry found!")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Duplicate entry found!, error: {err}",
         )
     else:
         logger.error(f"MySQL Error: {err}")

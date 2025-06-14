@@ -2,7 +2,7 @@ from typing import Optional
 
 from db import get_mysql_connection, handle_db_errors
 from fastapi import FastAPI, File, HTTPException, UploadFile, status
-from mysql.connector import ProgrammingError
+from mysql.connector import Error, ProgrammingError
 from utils import get_logger, validate_upload_file
 
 logger = get_logger(__name__)
@@ -13,18 +13,29 @@ app = FastAPI()
 async def departments(csv_file: Optional[UploadFile] = File(None)) -> dict:
     validate_upload_file(csv_file, max_lines=1000)
 
+    csv_file.file.seek(0)
+    contents = csv_file.file.read()
+    decoded_data = contents.decode("utf-8")
+    rows = decoded_data.strip().splitlines()
+    rows_tuples = [tuple(row.split(",")) for row in rows]
+
     db_conn = get_mysql_connection()
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute("SELECT * FROM departments;")
-        results = cursor.fetchall()
+        total_rows = len(rows_tuples)
 
-        if not results:
-            logger.warning("No departments found in the table.")
-            return {"message": "No departments found."}
+        cursor.executemany(
+            "INSERT INTO departments (id, department) VALUES (%s, %s)", rows_tuples
+        )
+        db_conn.commit()
 
-    except ProgrammingError as err:
+        logger.info(f"Total of {total_rows} departments data inserted successfully.")
+        return {
+            "message": f"Total of {total_rows} departments data inserted successfully."
+        }
+
+    except (ProgrammingError, Error) as err:
         handle_db_errors(err)
 
     except Exception as e:
