@@ -1,11 +1,30 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 
 
 app = FastAPI()
 
 @app.post("/departments")
-async def departments():
-    return {"message": "departments endpoint for send departments data."}
+async def departments(csv_file: UploadFile) -> dict:
+    try:
+        if not csv_file:
+            return {"message": "No file sent!"}
+
+        if not csv_file.filename.endswith('.csv'):
+            return {"error": "File must be a CSV!"}
+        
+        contents = csv_file.file.read()
+        contents = contents.decode("utf-8").splitlines()
+        
+        if len(contents) > 1000:
+            return {"error": "File name is too long, must be less than 1000 records!"}
+        elif len(contents) == 0:
+            return {"error": "File is empty! Send at least 1 record."}
+        else:
+            return {"message": contents} 
+
+    except Exception as e:
+        return {"error": str(e)}
+    
 
 @app.post("/jobs")
 async def jobs() -> dict:
