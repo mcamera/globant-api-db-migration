@@ -1,4 +1,14 @@
 services:
+    api:
+        build:
+            context: ./api
+            dockerfile: ./Dockerfile.api
+        container_name: api
+        ports:
+            - "8000:80"
+        depends_on:
+            - mysql
+
     mysql:
         image: mysql:8.0
         container_name: mysql
