@@ -1,7 +1,8 @@
 from typing import Optional
 
-from db import delete_table, insert_into_table
 from fastapi import FastAPI, File, UploadFile
+
+from db import delete_table, insert_into_table
 from utils import get_logger
 from validations import validate_csv_file, validate_upload_file
 
@@ -28,8 +29,19 @@ async def departments(csv_file: Optional[UploadFile] = File(None)) -> dict:
 
 
 @app.post("/jobs")
-async def jobs() -> dict:
-    return {"message": "jobs endpoint for send jobs data."}
+async def jobs(csv_file: Optional[UploadFile] = File(None)) -> dict:
+    validate_upload_file(csv_file)
+
+    contents = csv_file.file.read()
+    csv_rows = contents.decode("utf-8").strip().splitlines()
+    validate_csv_file(csv_rows, max_lines=1000)
+
+    csv_file.file.seek(0)
+    result = insert_into_table(csv_rows, table_name="jobs", columns="id, job")
+
+    csv_file.file.close()
+
+    return result
 
 
 @app.delete("/departments")
