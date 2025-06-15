@@ -97,10 +97,42 @@ def insert_into_table(csv_rows, table_name: str, columns: str):
         cursor.close()
         db_conn.close()
 
-        logger.info(f"Total of {total_rows} departments data inserted successfully.")
+        logger.info(f"Total of {total_rows} {table_name} data inserted successfully.")
         return {
-            "message": f"Total of {total_rows} departments data inserted successfully."
+            "message": f"Total of {total_rows} {table_name} data inserted successfully."
         }
+
+    except (ProgrammingError, Error) as err:
+        handle_db_errors(err)
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
+
+
+def delete_table(table_name: str) -> dict:
+    """Delete all data from a specified MySQL table.
+
+    Args:
+        table_name (str): The name of the table from which data will be deleted.
+
+    Returns:
+        dict: A dictionary containing a success message.
+    """
+    db_conn = get_mysql_connection()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(f"DELETE FROM {table_name};")
+        db_conn.commit()
+        cursor.close()
+        db_conn.close()
+
+        logger.info(f"All data from {table_name} deleted successfully.")
+        return {"message": f"All data from {table_name} deleted successfully."}
 
     except (ProgrammingError, Error) as err:
         handle_db_errors(err)
