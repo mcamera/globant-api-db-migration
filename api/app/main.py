@@ -56,6 +56,12 @@ async def delete_jobs() -> dict:
     return result
 
 
+@app.delete("/employees")
+async def delete_employees() -> dict:
+    result = delete_table(table_name="employees")
+    return result
+
+
 @app.post("/employees")
 async def employees() -> dict:
     return {"message": "Employees endpoint for send employees data."}
