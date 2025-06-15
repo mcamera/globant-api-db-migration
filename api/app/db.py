@@ -4,7 +4,8 @@ from typing import Union
 import mysql.connector
 from fastapi import HTTPException, status
 from mysql.connector import Error, ProgrammingError, errorcode
-from utils import get_logger
+from utils import fix_datetime, get_logger
+from validations import check_valid_rows
 
 logger = get_logger(__name__)
 
@@ -90,17 +91,31 @@ def insert_into_table(csv_rows, table_name: str, columns: str):
 
     try:
         total_rows = len(rows_tuples)
-        cursor.executemany(
-            f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s);", rows_tuples
-        )
+        if table_name == "employees":
+            rows_tuples_fixed = fix_datetime(rows_tuples)
+            valid_rows, result = check_valid_rows(rows_tuples_fixed)
+            cursor.executemany(
+                f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s, %s, %s, %s);",
+                valid_rows,
+            )
+        else:  # jobs and departments tables
+            cursor.executemany(
+                f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s);", rows_tuples
+            )
         db_conn.commit()
         cursor.close()
         db_conn.close()
 
-        logger.info(f"Total of {total_rows} {table_name} data inserted successfully.")
-        return {
-            "message": f"Total of {total_rows} {table_name} data inserted successfully."
-        }
+        if result:
+            logger.info(result)
+            return result
+        else:
+            logger.info(
+                f"Total of {total_rows} {table_name} data inserted successfully."
+            )
+            return {
+                "message": f"Total of {total_rows} {table_name} data inserted successfully."
+            }
 
     except (ProgrammingError, Error) as err:
         handle_db_errors(err)
