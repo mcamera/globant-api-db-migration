@@ -3,7 +3,7 @@ from typing import Union
 
 import mysql.connector
 from fastapi import HTTPException, status
-from mysql.connector import ProgrammingError, errorcode
+from mysql.connector import Error, ProgrammingError, errorcode
 from utils import get_logger
 
 logger = get_logger(__name__)
@@ -69,4 +69,77 @@ def handle_db_errors(err: Union[ProgrammingError, mysql.connector.Error]) -> Non
         logger.error(f"MySQL Error: {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)
+        )
+
+
+def insert_into_table(csv_rows, table_name: str, columns: str):
+    """Insert data into a specified MySQL table.
+
+    Args:
+        csv_file (_type_): The CSV file containing data to be inserted.
+        table_name (str): The name of the table where data will be inserted.
+        columns (str): A comma-separated string of column names in the table.
+
+    Raises:
+        HTTPException: If there is an error during the database operation, an HTTPException is raised with a status code and detail message.
+    """
+    rows_tuples = [tuple(row.split(",")) for row in csv_rows]
+
+    db_conn = get_mysql_connection()
+    cursor = db_conn.cursor()
+
+    try:
+        total_rows = len(rows_tuples)
+        cursor.executemany(
+            f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s);", rows_tuples
+        )
+        db_conn.commit()
+        cursor.close()
+        db_conn.close()
+
+        logger.info(f"Total of {total_rows} {table_name} data inserted successfully.")
+        return {
+            "message": f"Total of {total_rows} {table_name} data inserted successfully."
+        }
+
+    except (ProgrammingError, Error) as err:
+        handle_db_errors(err)
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
+
+
+def delete_table(table_name: str) -> dict:
+    """Delete all data from a specified MySQL table.
+
+    Args:
+        table_name (str): The name of the table from which data will be deleted.
+
+    Returns:
+        dict: A dictionary containing a success message.
+    """
+    db_conn = get_mysql_connection()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(f"DELETE FROM {table_name};")
+        db_conn.commit()
+        cursor.close()
+        db_conn.close()
+
+        logger.info(f"All data from {table_name} deleted successfully.")
+        return {"message": f"All data from {table_name} deleted successfully."}
+
+    except (ProgrammingError, Error) as err:
+        handle_db_errors(err)
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
         )
