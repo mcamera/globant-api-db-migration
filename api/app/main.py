@@ -1,6 +1,6 @@
 from typing import Optional
 
-from db import delete_table, insert_into_table
+from db import delete_table, execute_query, insert_into_table
 from fastapi import FastAPI, File, UploadFile
 from utils import get_logger
 from validations import validate_csv_file, validate_upload_file
@@ -81,11 +81,55 @@ async def delete_employees() -> dict:
     return result
 
 
-@app.get("/quantity_employees_hired_by_quarters/{year}")
-async def quantity_employees_hired_by_quarters(year: int) -> dict:
-    return {
-        "message": f"Shows the quantity of employees hired by quarters from the year {year}"
-    }
+@app.get("/total_employees_hired_by_quarters/{year}")
+async def total_employees_hired_by_quarters(year: int) -> dict:
+    query_name = "total_employees_hired_by_quarters"
+    result = execute_query(
+        query="""
+            WITH CTE AS (
+                SELECT
+                    department,
+                    job,
+                    YEAR(e.datetime) as year,
+                    MONTH(e.datetime) as month,
+                    CASE WHEN MONTH(e.datetime) IN (1,2,3) THEN 1 ELSE 0 END AS Q1,
+                    CASE WHEN MONTH(e.datetime) IN (4,5,6) THEN 1 ELSE 0 END AS Q2,
+                    CASE WHEN MONTH(e.datetime) IN (7,8,9) THEN 1 ELSE 0 END AS Q3,
+                    CASE WHEN MONTH(e.datetime) IN (10,11,12) THEN 1 ELSE 0 END AS Q4
+                FROM employees AS e
+                JOIN departments AS d on e.department_id = d.id
+                JOIN jobs AS j on e.job_id = j.id
+                WHERE YEAR(e.datetime) = %s
+            )
+            SELECT
+                department,
+                job,
+                CAST(SUM(Q1) as UNSIGNED) AS Q1,
+                CAST(SUM(Q2) as UNSIGNED) AS Q2,
+                CAST(SUM(Q3) as UNSIGNED) AS Q3,
+                CAST(SUM(Q4) as UNSIGNED) AS Q4
+            FROM CTE
+            GROUP BY department, job
+            ORDER BY department, job;""",
+        year=year,
+    )
+
+    details = []
+    total_rows = len(result)
+    for (department, job, Q1, Q2, Q3, Q4) in result:
+        details.append(
+            {
+                "department": department,
+                "job": job,
+                "Q1": Q1,
+                "Q2": Q2,
+                "Q3": Q3,
+                "Q4": Q4,
+            }
+        )
+
+    logger.info(f"Query {query_name} executed successfully.")
+    return {"total_employees_hired": total_rows, "year": year, "details": details}
 
 
 @app.get("/quantity_employees_hired_more_than_year_mean_by_department/{year}")

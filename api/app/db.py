@@ -158,3 +158,40 @@ def delete_table(table_name: str) -> dict:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         )
+
+
+def execute_query(query: str, year: int) -> dict:
+    """Execute a custom SQL query on the MySQL database.
+
+    Args:
+        query (str): The SQL query to be executed.
+        year(int): Year to filter the result
+
+    Returns:
+        dict: A dictionary containing the result of the query execution.
+    """
+    db_conn = get_mysql_connection()
+    cursor = db_conn.cursor()
+
+    result = []
+    try:
+        cursor.execute(query, (year,))
+        rows = cursor.fetchall()
+
+        for row in rows:
+            result.append(row)
+
+        cursor.close()
+        db_conn.close()
+
+        return result
+
+    except (ProgrammingError, Error) as err:
+        handle_db_errors(err)
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        )
