@@ -8,15 +8,20 @@ services:
             - "8000:80"
         depends_on:
             - mysql
-
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_PORT: 3306
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: database
     mysql:
         image: mysql:8.0
         container_name: mysql
+        restart: unless-stopped
         environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: database
-            MYSQL_USER: user
-            MYSQL_PASSWORD: ${MYSQL_USER_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         ports:
             - "3306:3306"
         volumes:
