@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "37ea2e10-f55b-4dcb-8a54-6819e8675faf",
+		"name": "Globant API db migration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45890816",
+		"_collection_link": "https://camera-5478763.postman.co/workspace/Camera's-Workspace~edb1b8b0-f8ed-4069-83de-202eb46533ee/collection/45890816-37ea2e10-f55b-4dcb-8a54-6819e8675faf?action=share&source=collection_link&creator=45890816"
+	},
+	"item": [
+		{
+			"name": "departments",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "csv_file",
+							"type": "file",
+							"src": ""
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/departments",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"departments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "departments",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/departments",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"departments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Jobs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Add your name in the body\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/jobs",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "jobs",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/jobs",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Employees",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Add your name in the body\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/employees",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "employees",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Add your name in the body\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/employees",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Total employees hired by quarters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/total_employees_hired_by_quarters/2001",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"total_employees_hired_by_quarters",
+						"2001"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "2001",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Total employees hired more than year mean by department",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/total_employees_hired_more_than_year_mean_by_department/2001",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"total_employees_hired_more_than_year_mean_by_department",
+						"2001"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/",
+			"type": "default"
+		}
+	]
+}
