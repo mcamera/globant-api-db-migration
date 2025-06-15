@@ -132,8 +132,48 @@ async def total_employees_hired_by_quarters(year: int) -> dict:
     return {"total_employees_hired": total_rows, "year": year, "details": details}
 
 
-@app.get("/quantity_employees_hired_more_than_year_mean_by_department/{year}")
-async def quantity_employees_hired_more_than_year_mean_by_department(year: int) -> dict:
-    return {
-        "message": f"Shows the quantity of employees hired more than year mean, by department, from the year {year}"
-    }
+@app.get("/total_employees_hired_more_than_year_mean_by_department/{year}")
+async def total_employees_hired_more_than_year_mean_by_department(year: int) -> dict:
+    query_name = "total_employees_hired_more_than_year_mean_by_department"
+    result = execute_query(
+        query="""
+            WITH CTE_TOTAL_HIRED_BY_DEP AS (
+                SELECT
+                    department_id,
+                    COUNT(1) AS hired
+                FROM employees
+                WHERE YEAR(datetime) = %s
+                GROUP BY department_id
+            ),
+            CTE_AVG_HIRED AS (
+                SELECT
+                    AVG(hired) AS avg_hired
+                FROM CTE_TOTAL_HIRED_BY_DEP
+            )
+
+            SELECT
+                id,
+                department,
+                hired
+            FROM CTE_TOTAL_HIRED_BY_DEP AS dep
+            JOIN departments AS d ON d.id = dep.department_id
+            JOIN CTE_AVG_HIRED AS avg_hired
+            WHERE dep.hired > avg_hired.avg_hired
+            ORDER BY hired DESC;
+        """,
+        year=year,
+    )
+
+    details = []
+    total_rows = len(result)
+    for id, department, hired in result:
+        details.append(
+            {
+                "id": id,
+                "department": department,
+                "hired": hired,
+            }
+        )
+
+    logger.info(f"Query {query_name} executed successfully.")
+    return {"total_departments_hired": total_rows, "year": year, "details": details}
