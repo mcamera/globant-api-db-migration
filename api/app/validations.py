@@ -1,5 +1,5 @@
+from app.utils import get_logger
 from fastapi import HTTPException, UploadFile, status
-from utils import get_logger
 
 
 def validate_upload_file(csv_file: UploadFile) -> None:
