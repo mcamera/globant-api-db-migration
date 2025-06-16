@@ -1,0 +1,265 @@
+{
+    "total_inserted_rows": 962,
+    "total_rejected_rows": 37,
+    "reject_records": [
+        {
+            "line": 49,
+            "id": "1049",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 92,
+            "id": "1092",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 95,
+            "id": "1095",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 98,
+            "id": "1098",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 110,
+            "id": "1110",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 130,
+            "id": "1130",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 170,
+            "id": "1170",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 195,
+            "id": "1195",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 252,
+            "id": "1252",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 279,
+            "id": "1279",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 304,
+            "id": "1304",
+            "errors": [
+                "Missing value for 'job_id'"
+            ]
+        },
+        {
+            "line": 322,
+            "id": "1322",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 323,
+            "id": "1323",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 413,
+            "id": "1413",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 423,
+            "id": "1423",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 432,
+            "id": "1432",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 463,
+            "id": "1463",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 467,
+            "id": "1467",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 474,
+            "id": "1474",
+            "errors": [
+                "Missing value for 'job_id'"
+            ]
+        },
+        {
+            "line": 483,
+            "id": "1483",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 493,
+            "id": "1493",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 523,
+            "id": "1523",
+            "errors": [
+                "Missing value for 'job_id'"
+            ]
+        },
+        {
+            "line": 561,
+            "id": "1561",
+            "errors": [
+                "Missing value for 'job_id'"
+            ]
+        },
+        {
+            "line": 589,
+            "id": "1589",
+            "errors": [
+                "Missing value for 'job_id'"
+            ]
+        },
+        {
+            "line": 590,
+            "id": "1590",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 613,
+            "id": "1613",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 686,
+            "id": "1686",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 688,
+            "id": "1688",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 714,
+            "id": "1714",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        },
+        {
+            "line": 780,
+            "id": "1780",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 799,
+            "id": "1799",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 814,
+            "id": "1814",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 858,
+            "id": "1858",
+            "errors": [
+                "Missing value for 'name'"
+            ]
+        },
+        {
+            "line": 860,
+            "id": "1860",
+            "errors": [
+                "Missing value for 'job_id'"
+            ]
+        },
+        {
+            "line": 869,
+            "id": "1869",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 925,
+            "id": "1925",
+            "errors": [
+                "Missing value for 'datetime'"
+            ]
+        },
+        {
+            "line": 987,
+            "id": "1987",
+            "errors": [
+                "Missing value for 'department_id'"
+            ]
+        }
+    ]
+}
