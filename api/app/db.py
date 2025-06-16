@@ -2,10 +2,10 @@ import os
 from typing import Union
 
 import mysql.connector
+from app.utils import fix_datetime, get_logger
+from app.validations import check_valid_rows
 from fastapi import HTTPException, status
 from mysql.connector import Error, ProgrammingError, errorcode
-from utils import fix_datetime, get_logger
-from validations import check_valid_rows
 
 logger = get_logger(__name__)
 
@@ -98,21 +98,25 @@ def insert_into_table(csv_rows, table_name: str, columns: str):
                 f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s, %s, %s, %s);",
                 valid_rows,
             )
+            db_conn.commit()
+            cursor.close()
+            db_conn.close()
+            logger.info(result)
+
+            return result
+
         else:  # jobs and departments tables
             cursor.executemany(
                 f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s);", rows_tuples
             )
-        db_conn.commit()
-        cursor.close()
-        db_conn.close()
+            db_conn.commit()
+            cursor.close()
+            db_conn.close()
 
-        if result:
-            logger.info(result)
-            return result
-        else:
             logger.info(
                 f"Total of {total_rows} {table_name} data inserted successfully."
             )
+
             return {
                 "message": f"Total of {total_rows} {table_name} data inserted successfully."
             }

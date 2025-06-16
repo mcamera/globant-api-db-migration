@@ -1,9 +1,9 @@
 from typing import Optional
 
-from db import delete_table, execute_query, insert_into_table
+from app.db import delete_table, execute_query, insert_into_table
+from app.utils import get_logger
+from app.validations import validate_csv_file, validate_upload_file
 from fastapi import FastAPI, File, UploadFile
-from utils import get_logger
-from validations import validate_csv_file, validate_upload_file
 
 logger = get_logger(__name__)
 app = FastAPI()

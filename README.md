@@ -10,12 +10,13 @@ This project provides a REST API to ingest historical CSV data into a MySQL data
 
 # Architecture
 
-![alt text](docs/architecture.png)
+![alt text](docs/architecture_new.png)
 
 Components:
 - Postman: Used to test the API. Alternatively, you can use the built-in FastAPI Swagger UI. 
 - API: Developed with Python and FastAPI.
 - MySQL Database: Stores the ingested data and supports query execution.
+- Container Registry: Stores the Docker images for the API.
 
 ## Project behavior
 1. **Uploading historical data**  
@@ -62,24 +63,36 @@ Components:
 - Postman application (or equivalent for interact with the endpoints)
 
 ## Setup the DEV enviroment
-```
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade -r api/requirements-api.txt
-
-pip install pre-commit
-pre-commit install
-```
-Create a `.env` file with a config like this:
-```
-MYSQL_HOST=mysql
-MYSQL_USER=user
-MYSQL_PASSWORD=1234
-```
+1. Clone the repository:
+   ```
+   git clone
+   ```
+2. Change to the project directory:
+   ```
+   cd globant-api-db-migration
+   ```
+3. Create a `.env` file in the root of the project with the following content:
+   ```
+   MYSQL_HOST=mysql
+   MYSQL_USER=user
+   MYSQL_PASSWORD=1234
+   ```
+4. Install the Python dependencies:
+   ```
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install --upgrade pip
+   pip install --upgrade -r api/requirements-api.txt
+   ```
+5. Install pre-commit hooks:
+   ```
+   pip install pre-commit
+   pre-commit install
+   ```
 
 ## Testing in DEV
 
-1. Run all the containers with the command `docker-compose up -d`. Wait for the services are up and running.
+1. Run all the containers with the command `docker-compose up -d`. Wait for the services are up and running.  
 ![alt text](docs/image.png)
 
 2. Use the Postman to interact with the API.  
@@ -88,16 +101,86 @@ MYSQL_PASSWORD=1234
     ![alt text](docs/image-2.png)
 
 3. If you want to interact inside the MySQL database, follow these steps:  
-  3.1 run `docker ps` and look for the CONTAINER ID of the MySQL container 
-  3.2 Enter in the MySQL container running this command: `docker exec -it 251 mysql -u user -p`. Then input the password that you've configured before.  
-  3.3 Run the command `USE database;`  
-  3.4 Do your queries, for example: `SELECT * from employees;` or the queries that have been configurated for the endpoints and you will have these results:  
- 3.4.1 Endpoint total_employees_hired_by_quarters/2021:  
-    ![alt text](docs/image-4.png)
-
+    3.1 run `docker ps` and look for the CONTAINER ID of the MySQL container  
+    3.2 Enter in the MySQL container running this command: `docker exec -it 251 mysql -u user -p`. Then input the password that you've configured before.  
+    3.3 Run the command `USE database;`  
+    3.4 Do your queries, for example: `SELECT * from employees;` or the queries that have been configurated for the endpoints and you will have these results:  
+    3.4.1 Endpoint total_employees_hired_by_quarters/2021:  
+        ![alt text](docs/image-4.png)  
     3.4.2 Endpoint total_employees_hired_more_than_year_mean_by_department/2021:  
-    ![alt text](docs/image-3.png)
+        ![alt text](docs/image-3.png)  
 
+
+## Deploy in PRD
+
+This project is designed to be deployed in a Azure Cloud environment, but you can deploy it in any cloud provider that supports Docker containers.
+
+1. Install Azure CLI  
+
+2. Create a instance of Azure Database for MySQL - Flexible Server in the Azure portal.  
+    - Create a new MySQL server with the following configuration:
+        - Server name: `globant-mysql-server`
+        - Admin username: `globant`
+        - Password: `<redacted>`
+        - Location: `East US`
+        - Version: `8.0`
+        - Compute + storage: `Burstable, B1ms, 1 vCores, 2 GiB RAM, 20 GiB storage, Auto scale IOPS`  
+
+3. You will have to create manually the database and tables in the MySQL server.  
+    - Connect to the MySQL server using a MySQL client or the Azure portal.  
+    - Run the SQL script `sql/create_tables.sql` to create the necessary tables.  
+
+4. Create an Azure Container Registry (ACR) to store the Docker images. 
+    - Create a new ACR with the following configuration:
+        - Name: `globant`
+        - Location: `East US`
+        - SKU: `Basic`
+5. Build the Docker image for the API and push it to the ACR.
+    - Log in to the ACR:
+        ```
+        az acr login --name globantacr.azurecr.io
+        ```
+    - Run the following command in the project folder:
+        ```
+        docker build -t globantacr.azurecr.io/globant-api-db-migration:latest ./api
+        ```
+    - Push the image to the ACR:
+        ```
+        docker push globantacr.azurecr.io/globant-api-db-migration:latest
+        ```
+6. Create an App Service in Azure to run the API.
+    - Create a new App Service with the following configuration:
+        - Name: `globant-api-db-migration`
+        - Publish: `Docker Container`
+        - Operating System: `Linux`
+        - Region: `East US`
+        - App Service Plan: `Free`
+7. Configure the App Service to use the Docker image from the ACR.
+    - In the App Service settings, go to `Container settings` and select `Azure Container Registry`.
+    - Select the ACR you created earlier and choose the image `globantacr-api-db-migration:latest`.
+8. Configure the App Service to connect to the MySQL database.
+    - In the App Service settings, go to `Configuration` and add the following application settings:
+        - `MYSQL_HOST`: `globant-mysql-server.mysql.database.azure.com`
+        - `MYSQL_USER`: `globant`
+        - `MYSQL_PASSWORD`: `<REDACTED>`
+9. Deploy the App Service and wait for it to be ready.
+10. Once the App Service is running, you can access the API at the URL: `https://<your-app-service-name>.azurewebsites.net`.
+
+## Testing in PRD
+1. Test the API endpoints using Postman or any other API client.
+2. Use the same endpoints as in the development environment, but with the URL of your App Service.
+   - For example, to test the endpoint `total_employees_hired_by_quarters/2021`, you would use:
+    ```
+    GET https://<your-app-service-name>.azurewebsites.net/total_employees_hired_by_quarters/2021
+    ```
+3. You can also test the API using the built-in FastAPI Swagger UI by navigating to:
+   ```
+   https://<your-app-service-name>.azurewebsites.net/docs
+   ```
+4. If you want, you can also test the API using the MySQL database in Azure.  
+   - Connect to the MySQL database using a MySQL client or the Azure portal.
+   - Run the same queries as in the development environment to verify the data.
+   
 
 ## Results
 
