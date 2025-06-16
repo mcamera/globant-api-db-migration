@@ -1,0 +1,41 @@
+{
+    "total_departments_hired": 7,
+    "year": 2021,
+    "details": [
+        {
+            "id": 8,
+            "department": "Support",
+            "hired": 216
+        },
+        {
+            "id": 5,
+            "department": "Engineering",
+            "hired": 205
+        },
+        {
+            "id": 6,
+            "department": "Human Resources",
+            "hired": 201
+        },
+        {
+            "id": 7,
+            "department": "Services",
+            "hired": 200
+        },
+        {
+            "id": 4,
+            "department": "Business Development",
+            "hired": 185
+        },
+        {
+            "id": 3,
+            "department": "Research and Development",
+            "hired": 148
+        },
+        {
+            "id": 9,
+            "department": "Marketing",
+            "hired": 142
+        }
+    ]
+}

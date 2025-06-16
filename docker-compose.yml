@@ -1,0 +1,29 @@
+services:
+    api:
+        build:
+            context: ./api
+            dockerfile: ./Dockerfile.api
+        container_name: api
+        ports:
+            - "8000:80"
+        depends_on:
+            - mysql
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_PORT: 3306
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: database
+    mysql:
+        image: mysql:8.0
+        container_name: mysql
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: database
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./dbdata:/var/lib/mysql
+            - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
