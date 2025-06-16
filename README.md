@@ -122,6 +122,16 @@ globant-api-db-migration
 │   ├── departments.csv         # Sample data for testing purpose  
 │   ├── hired_employees.csv     # Sample data for testing purpose  
 │   └── jobs.csv                # Sample data for testing purpose  
+├── docs
+│   ├── results
+│   │   ├── get_total(...).json # Results of the endpoint total_employees_hired_by_quarters/2021
+│   │   ├── get_total(...).json # Results of the endpoint total_employees_hired_more_than_year_mean_by_department/2021
+│   │   └── post_employees.json # Results of the endpoint POST employees
+│   ├── architecture.png        # Image of Architecture diagram of the project
+│   ├── image-2.png             # Image of request in Postman to the endpoint total_employees_hired_by_quarters/2021
+│   ├── image-3.png             # Image of request in Postman to the endpoint total_employees_hired_more_than_year_mean_by_department/2021
+│   ├── image-4.png             # Image of request in MySQL to the endpoint total_employees_hired_by_quarters/2021      
+│   └── image.png               # Image of the containers running in the Docker environment
 ├── sql  
 │   ├── create_tables.sql       # Query used to the creates the tables in the MySQL database  
 │   ├── query1.sql              # Query used in the endpoint total_employees_hired_by_quarters  
